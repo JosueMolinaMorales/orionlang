@@ -1,7 +1,9 @@
 package token
 
+// TokenType represents a token type
 type TokenType string
 
+// Token represents a token
 type Token struct {
 	Type    TokenType
 	Literal string
@@ -57,6 +59,7 @@ var keywords = map[string]TokenType{
 	"return": RETURN,
 }
 
+// LookupIdent checks the keywords table to see whether the given
 func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
 		return tok

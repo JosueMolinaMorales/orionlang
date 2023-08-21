@@ -4,6 +4,7 @@ import (
 	"github.com/JosueMolinaMorales/monkeylang/internal/token"
 )
 
+// Lexer is the lexer struct
 type Lexer struct {
 	input        string
 	position     int  // current position in input (points to current char)
@@ -11,6 +12,7 @@ type Lexer struct {
 	ch           byte // current char under examination
 }
 
+// New creates a new lexer
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar()
@@ -24,9 +26,10 @@ func (l *Lexer) readChar() {
 		l.ch = l.input[l.readPosition]
 	}
 	l.position = l.readPosition
-	l.readPosition += 1
+	l.readPosition++ // Advance the read position
 }
 
+// NextToken returns the next token
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
@@ -127,9 +130,8 @@ func (l *Lexer) skipWhitespace() {
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
-	} else {
-		return l.input[l.readPosition]
 	}
+	return l.input[l.readPosition]
 }
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
