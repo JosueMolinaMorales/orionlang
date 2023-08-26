@@ -1,7 +1,6 @@
 package evaluator_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/JosueMolinaMorales/monkeylang/internal/evaluator"
@@ -9,6 +8,32 @@ import (
 	"github.com/JosueMolinaMorales/monkeylang/internal/object"
 	"github.com/JosueMolinaMorales/monkeylang/internal/parser"
 )
+
+func TestReturnStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"return 10;", 10},
+		{"return 10; 9;", 10},
+		{"return 2 * 5; 9;", 10},
+		{"9; return 2 * 5; 9;", 10},
+		{`
+		if (10 > 1) {
+			if (10 > 1) {
+				return 10;
+			}
+			return 1;
+		}
+		`, 10},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		testIntegerObject(t, evaluated, tt.expected)
+	}
+}
 
 func TestIfElseExpression(t *testing.T) {
 	tests := []struct {
@@ -83,10 +108,7 @@ func TestEvalBooleanExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		fmt.Println("Test: ", tt.input)
-		fmt.Println("Expected: ", tt.expected)
 		evaluated := testEval(tt.input)
-		fmt.Println("Got: ", evaluated)
 		testBooleanObject(t, evaluated, tt.expected)
 	}
 }
