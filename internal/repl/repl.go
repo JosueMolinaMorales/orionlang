@@ -7,6 +7,7 @@ import (
 
 	"github.com/JosueMolinaMorales/monkeylang/internal/evaluator"
 	"github.com/JosueMolinaMorales/monkeylang/internal/lexer"
+	"github.com/JosueMolinaMorales/monkeylang/internal/object"
 	"github.com/JosueMolinaMorales/monkeylang/internal/parser"
 )
 
@@ -16,6 +17,7 @@ const PROMPT = ">> "
 // Start starts the REPL
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvrionment()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -34,7 +36,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program)
+		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
