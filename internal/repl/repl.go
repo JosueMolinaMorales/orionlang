@@ -17,7 +17,7 @@ const PROMPT = ">> "
 // Start starts the REPL
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	env := object.NewEnvrionment()
+	env := object.NewEnvironment()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
