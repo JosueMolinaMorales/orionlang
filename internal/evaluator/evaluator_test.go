@@ -50,7 +50,6 @@ func TestFunctionObject(t *testing.T) {
 	if fn.Body.String() != expectedBody {
 		t.Fatalf("body is not %q. got=%q", expectedBody, fn.Body.String())
 	}
-
 }
 
 func TestLetStatements(t *testing.T) {
@@ -282,7 +281,7 @@ func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
 	program := p.ParseProgram()
-	env := object.NewEnvrionment()
+	env := object.NewEnvironment()
 
 	return evaluator.Eval(program, env)
 }
