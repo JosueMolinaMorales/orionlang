@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/token"
+	"github.com/JosueMolinaMorales/orionlang/internal/token"
 )
 
 // Node represents a node in the AST

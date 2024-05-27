@@ -3,7 +3,7 @@ package ast
 import (
 	"testing"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/token"
+	"github.com/JosueMolinaMorales/orionlang/internal/token"
 )
 
 func TestString(t *testing.T) {

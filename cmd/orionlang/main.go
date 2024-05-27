@@ -8,16 +8,16 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/evaluator"
-	"github.com/JosueMolinaMorales/monkeylang/internal/lexer"
-	"github.com/JosueMolinaMorales/monkeylang/internal/object"
-	"github.com/JosueMolinaMorales/monkeylang/internal/parser"
-	"github.com/JosueMolinaMorales/monkeylang/internal/repl"
+	"github.com/JosueMolinaMorales/orionlang/internal/evaluator"
+	"github.com/JosueMolinaMorales/orionlang/internal/lexer"
+	"github.com/JosueMolinaMorales/orionlang/internal/object"
+	"github.com/JosueMolinaMorales/orionlang/internal/parser"
+	"github.com/JosueMolinaMorales/orionlang/internal/repl"
 )
 
 var (
 	filePath = flag.String("path", ".", "The file path to the file that should be interpreted")
-	runRepl  = flag.Bool("repl", false, "Run REPL for MonkeyLang")
+	runRepl  = flag.Bool("repl", false, "Run REPL for OrionLang")
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Printf("Hello %s! This is the Monkey programming language!\n", user.Username)
+		fmt.Printf("Hello %s! This is the Orion programming language!\n", user.Username)
 
 		fmt.Printf("Feel free to type in commands\n")
 
@@ -37,8 +37,8 @@ func main() {
 		return
 	}
 
-	if !strings.HasSuffix(*filePath, ".mkl") {
-		log.Fatalf("File %s is not a MonkeyLang file", *filePath)
+	if !strings.HasSuffix(*filePath, ".or") {
+		log.Fatalf("File %s is not a OrionLang file", *filePath)
 	}
 
 	fileInfo, err := os.ReadFile(*filePath)

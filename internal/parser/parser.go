@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/ast"
-	"github.com/JosueMolinaMorales/monkeylang/internal/lexer"
-	"github.com/JosueMolinaMorales/monkeylang/internal/token"
+	"github.com/JosueMolinaMorales/orionlang/internal/ast"
+	"github.com/JosueMolinaMorales/orionlang/internal/lexer"
+	"github.com/JosueMolinaMorales/orionlang/internal/token"
 )
 
 const (

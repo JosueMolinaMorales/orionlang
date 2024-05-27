@@ -6,7 +6,7 @@ import (
 	"hash/fnv"
 	"strings"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/ast"
+	"github.com/JosueMolinaMorales/orionlang/internal/ast"
 )
 
 const (

@@ -3,7 +3,7 @@ package evaluator
 import (
 	"fmt"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/object"
+	"github.com/JosueMolinaMorales/orionlang/internal/object"
 )
 
 var builtins = map[string]*object.Builtin{

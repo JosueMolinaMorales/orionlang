@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"github.com/JosueMolinaMorales/monkeylang/internal/token"
+	"github.com/JosueMolinaMorales/orionlang/internal/token"
 )
 
 // Lexer is the lexer struct

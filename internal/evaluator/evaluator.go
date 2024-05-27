@@ -3,8 +3,8 @@ package evaluator
 import (
 	"fmt"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/ast"
-	"github.com/JosueMolinaMorales/monkeylang/internal/object"
+	"github.com/JosueMolinaMorales/orionlang/internal/ast"
+	"github.com/JosueMolinaMorales/orionlang/internal/object"
 )
 
 var (

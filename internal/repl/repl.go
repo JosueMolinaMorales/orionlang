@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/evaluator"
-	"github.com/JosueMolinaMorales/monkeylang/internal/lexer"
-	"github.com/JosueMolinaMorales/monkeylang/internal/object"
-	"github.com/JosueMolinaMorales/monkeylang/internal/parser"
+	"github.com/JosueMolinaMorales/orionlang/internal/evaluator"
+	"github.com/JosueMolinaMorales/orionlang/internal/lexer"
+	"github.com/JosueMolinaMorales/orionlang/internal/object"
+	"github.com/JosueMolinaMorales/orionlang/internal/parser"
 )
 
 // PROMPT is the prompt of the REPL
@@ -45,7 +45,7 @@ func Start(in io.Reader, out io.Writer) {
 }
 
 func PrintParserErrors(out io.Writer, errors []string) {
-	io.WriteString(out, "Woops! We ran into some monkey business here!\n")
+	io.WriteString(out, "Woops! We ran into some errors!\n")
 	io.WriteString(out, " parser errors:\n")
 	for _, msg := range errors {
 		io.WriteString(out, "\t"+msg+"\n")

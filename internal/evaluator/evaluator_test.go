@@ -3,10 +3,10 @@ package evaluator_test
 import (
 	"testing"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/evaluator"
-	"github.com/JosueMolinaMorales/monkeylang/internal/lexer"
-	"github.com/JosueMolinaMorales/monkeylang/internal/object"
-	"github.com/JosueMolinaMorales/monkeylang/internal/parser"
+	"github.com/JosueMolinaMorales/orionlang/internal/evaluator"
+	"github.com/JosueMolinaMorales/orionlang/internal/lexer"
+	"github.com/JosueMolinaMorales/orionlang/internal/object"
+	"github.com/JosueMolinaMorales/orionlang/internal/parser"
 )
 
 func TestHashIndexExpressions(t *testing.T) {

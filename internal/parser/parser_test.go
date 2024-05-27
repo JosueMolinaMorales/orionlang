@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/JosueMolinaMorales/monkeylang/internal/ast"
-	"github.com/JosueMolinaMorales/monkeylang/internal/lexer"
+	"github.com/JosueMolinaMorales/orionlang/internal/ast"
+	"github.com/JosueMolinaMorales/orionlang/internal/lexer"
 )
 
 func TestParsingHasLiteralWithExpressions(t *testing.T) {

@@ -1,3 +1,2 @@
-module github.com/JosueMolinaMorales/monkeylang
-
+module github.com/JosueMolinaMorales/orionlang
 go 1.18
