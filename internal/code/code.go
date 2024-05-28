@@ -63,6 +63,9 @@ const (
 	// OpAdd has no operands. It adds the two numbers on top of the stack and adds
 	// the result back on to the stack
 	OpAdd
+
+	// OpPop tells the VM when to pop the topmost element off the stack
+	OpPop
 )
 
 type Definition struct {
@@ -77,8 +80,8 @@ var definitions = map[Opcode]*Definition{
 	// OpConstant has only an operand that is two bytes wide, which makes it an uint16
 	// which limits its maximum value to 65536
 	OpConstant: {"OpConstant", []int{2}},
-
-	OpAdd: {"OpAdd", []int{}},
+	OpAdd:      {"OpAdd", []int{}},
+	OpPop:      {"OpPop", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.

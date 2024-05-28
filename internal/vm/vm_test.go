@@ -34,12 +34,12 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 			t.Fatalf("vm error: %s", err)
 		}
 
-		stackElem := vm.StackTop()
+		stackElem := vm.LastPoppedStackElem()
 		testExpectedObject(t, tt.expected, stackElem)
 	}
 }
 
-func testIntegerArithmetic(t *testing.T) {
+func TestIntegerArithmetic(t *testing.T) {
 	tests := []vmTestCase{
 		{"1", 1},
 		{"2", 2},
