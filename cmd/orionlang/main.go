@@ -15,9 +15,15 @@ import (
 	"github.com/JosueMolinaMorales/orionlang/internal/repl"
 )
 
+const (
+	Interpreter string = "interpreter"
+	Compiler    string = "compiler"
+)
+
 var (
-	filePath = flag.String("path", ".", "The file path to the file that should be interpreted")
-	runRepl  = flag.Bool("repl", false, "Run REPL for OrionLang")
+	filePath       = flag.String("path", ".", "The file path to the file that should be interpreted")
+	runRepl        = flag.Bool("repl", false, "Run REPL for OrionLang")
+	useInterpreter = flag.Bool("interpreter", false, "Execute OrionLang using the interpreter instead of the compiler")
 )
 
 func main() {
@@ -33,7 +39,7 @@ func main() {
 
 		fmt.Printf("Feel free to type in commands\n")
 
-		repl.Start(os.Stdin, os.Stdout)
+		repl.Start(os.Stdin, os.Stdout, *useInterpreter)
 		return
 	}
 
