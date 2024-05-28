@@ -73,6 +73,10 @@ const (
 	OpSubtract
 	// OpPop tells the VM when to pop the topmost element off the stack
 	OpPop
+	// OpTrue represents the true boolean literal
+	OpTrue
+	// OpFalse represents the false boolean literal
+	OpFalse
 )
 
 type Definition struct {
@@ -92,6 +96,8 @@ var definitions = map[Opcode]*Definition{
 	OpMultiply: {"OpMultiply", []int{}},
 	OpDivide:   {"OpDivide", []int{}},
 	OpSubtract: {"OpSubtract", []int{}},
+	OpFalse:    {"OpFalse", []int{}},
+	OpTrue:     {"OpTrue", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
