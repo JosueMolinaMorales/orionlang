@@ -44,6 +44,24 @@ func TestIntegerArithmetic(t *testing.T) {
 		{"1", 1},
 		{"2", 2},
 		{"1 + 2", 3},
+		{"1 - 2", -1},
+		{"1 * 2", 2},
+		{"2 / 1", 2},
+		{"50 / 2 * 2 + 10 - 5", 55},
+		{"10 + 20 * 30", 610},         // test order of operations
+		{"(10 + 20) * 30", 900},       // test parentheses
+		{"20 / 5", 4},                 // simple division
+		{"5 / 2", 2},                  // integer division
+		{"10 * 0", 0},                 // multiplication by zero
+		{"0 * 10", 0},                 // zero multiplied by any number
+		{"0 + 0", 0},                  // zero addition
+		{"0 - 0", 0},                  // zero subtraction
+		{"(10 / 2) * 3", 15},          // division followed by multiplication
+		{"10 / (2 * 2)", 2},           // division with multiplication in parentheses
+		{"(10 + 20) / (2 * 5)", 3},    // combined operations with parentheses
+		{"1 + (2 * (2 + 3))", 11},     // nested parentheses
+		{"10 - (5 + 5)", 0},           // subtraction with parentheses
+		{"100 - ((10 - 5) * 10)", 50}, // nested operations with parentheses
 	}
 
 	runVmTests(t, tests)

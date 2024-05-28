@@ -59,11 +59,18 @@ const (
 	// When the VM executes OpConstant it retrieves the constant using the operand
 	// as an index and pushes it on to the stack
 	OpConstant Opcode = iota
-
 	// OpAdd has no operands. It adds the two numbers on top of the stack and adds
 	// the result back on to the stack
 	OpAdd
-
+	// OpMultiply has no operands. It multiplies the top two numbers on the stacks
+	// and adds the result to the stack
+	OpMultiply
+	// OpDivide has no operands. It divides the top two numbers on the stack and
+	// adds the results to the stack
+	OpDivide
+	// OpSubtract has no operands. It divides the top two numbers on the stack and
+	// adds the result to the stack
+	OpSubtract
 	// OpPop tells the VM when to pop the topmost element off the stack
 	OpPop
 )
@@ -82,6 +89,9 @@ var definitions = map[Opcode]*Definition{
 	OpConstant: {"OpConstant", []int{2}},
 	OpAdd:      {"OpAdd", []int{}},
 	OpPop:      {"OpPop", []int{}},
+	OpMultiply: {"OpMultiply", []int{}},
+	OpDivide:   {"OpDivide", []int{}},
+	OpSubtract: {"OpSubtract", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
