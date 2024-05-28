@@ -10,6 +10,11 @@ import (
 
 const StackSize = 2046
 
+var (
+	True  = &object.Boolean{Value: true}
+	False = &object.Boolean{Value: false}
+)
+
 // VM represents a virtual machine that executes bytecode instructions.
 type VM struct {
 	constants    []object.Object
@@ -61,6 +66,16 @@ func (vm *VM) Run() error {
 			vm.pop()
 		case code.OpAdd, code.OpDivide, code.OpMultiply, code.OpSubtract:
 			err := vm.executeBinaryOperation(op)
+			if err != nil {
+				return err
+			}
+		case code.OpTrue:
+			err := vm.push(True)
+			if err != nil {
+				return err
+			}
+		case code.OpFalse:
+			err := vm.push(False)
 			if err != nil {
 				return err
 			}
