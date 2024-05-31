@@ -77,6 +77,14 @@ const (
 	OpTrue
 	// OpFalse represents the false boolean literal
 	OpFalse
+	// OpEqual represents the == comparison operator
+	OpEqual
+	// OpNotEqual represents the != comparison operator
+	OpNotEqual
+	// OpGreaterThan represents the > comparison operator
+	// There is no representation of < comparison operator because we can just flip < to >
+	// e.g. 4 < 2 --> 2 > 4
+	OpGreaterThan
 )
 
 type Definition struct {
@@ -90,14 +98,17 @@ type Definition struct {
 var definitions = map[Opcode]*Definition{
 	// OpConstant has only an operand that is two bytes wide, which makes it an uint16
 	// which limits its maximum value to 65536
-	OpConstant: {"OpConstant", []int{2}},
-	OpAdd:      {"OpAdd", []int{}},
-	OpPop:      {"OpPop", []int{}},
-	OpMultiply: {"OpMultiply", []int{}},
-	OpDivide:   {"OpDivide", []int{}},
-	OpSubtract: {"OpSubtract", []int{}},
-	OpFalse:    {"OpFalse", []int{}},
-	OpTrue:     {"OpTrue", []int{}},
+	OpConstant:    {"OpConstant", []int{2}},
+	OpAdd:         {"OpAdd", []int{}},
+	OpPop:         {"OpPop", []int{}},
+	OpMultiply:    {"OpMultiply", []int{}},
+	OpDivide:      {"OpDivide", []int{}},
+	OpSubtract:    {"OpSubtract", []int{}},
+	OpFalse:       {"OpFalse", []int{}},
+	OpTrue:        {"OpTrue", []int{}},
+	OpEqual:       {"OpEqual", []int{}},
+	OpNotEqual:    {"OpNotEqual", []int{}},
+	OpGreaterThan: {"OpGreaterThan", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
