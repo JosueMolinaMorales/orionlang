@@ -85,6 +85,12 @@ const (
 	// There is no representation of < comparison operator because we can just flip < to >
 	// e.g. 4 < 2 --> 2 > 4
 	OpGreaterThan
+	// OpMinus represents the - negate operator. Negating the integer thats
+	// on the top of the stack
+	OpMinus
+	// OpBang represents the ! negate operator. Negating the boolean thats
+	// on top of the stack
+	OpBang
 )
 
 type Definition struct {
@@ -109,6 +115,8 @@ var definitions = map[Opcode]*Definition{
 	OpEqual:       {"OpEqual", []int{}},
 	OpNotEqual:    {"OpNotEqual", []int{}},
 	OpGreaterThan: {"OpGreaterThan", []int{}},
+	OpMinus:       {"OpMinus", []int{}},
+	OpBang:        {"OpBang", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
