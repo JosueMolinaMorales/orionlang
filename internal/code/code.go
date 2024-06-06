@@ -91,6 +91,14 @@ const (
 	// OpBang represents the ! negate operator. Negating the boolean thats
 	// on top of the stack
 	OpBang
+	// OpJumpNotTruthy is used to jump when a given condition resolves to a non-truthy value
+	// This opcode expects an argument to where to jump to if the condition is falsy
+	OpJumpNotTruthy
+	// OpJump is used when jumping out of a conditional body when it results in a truthy value.
+	// This opcode expects an argument to where to jump to
+	OpJump
+	// OpNull represents a Null value and tells the vm to insert a null value
+	OpNull
 )
 
 type Definition struct {
@@ -104,19 +112,22 @@ type Definition struct {
 var definitions = map[Opcode]*Definition{
 	// OpConstant has only an operand that is two bytes wide, which makes it an uint16
 	// which limits its maximum value to 65536
-	OpConstant:    {"OpConstant", []int{2}},
-	OpAdd:         {"OpAdd", []int{}},
-	OpPop:         {"OpPop", []int{}},
-	OpMultiply:    {"OpMultiply", []int{}},
-	OpDivide:      {"OpDivide", []int{}},
-	OpSubtract:    {"OpSubtract", []int{}},
-	OpFalse:       {"OpFalse", []int{}},
-	OpTrue:        {"OpTrue", []int{}},
-	OpEqual:       {"OpEqual", []int{}},
-	OpNotEqual:    {"OpNotEqual", []int{}},
-	OpGreaterThan: {"OpGreaterThan", []int{}},
-	OpMinus:       {"OpMinus", []int{}},
-	OpBang:        {"OpBang", []int{}},
+	OpConstant:      {"OpConstant", []int{2}},
+	OpAdd:           {"OpAdd", []int{}},
+	OpPop:           {"OpPop", []int{}},
+	OpMultiply:      {"OpMultiply", []int{}},
+	OpDivide:        {"OpDivide", []int{}},
+	OpSubtract:      {"OpSubtract", []int{}},
+	OpFalse:         {"OpFalse", []int{}},
+	OpTrue:          {"OpTrue", []int{}},
+	OpEqual:         {"OpEqual", []int{}},
+	OpNotEqual:      {"OpNotEqual", []int{}},
+	OpGreaterThan:   {"OpGreaterThan", []int{}},
+	OpMinus:         {"OpMinus", []int{}},
+	OpBang:          {"OpBang", []int{}},
+	OpJumpNotTruthy: {"OpJumpNotTruthy", []int{2}},
+	OpJump:          {"OpJump", []int{2}},
+	OpNull:          {"OpNull", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
