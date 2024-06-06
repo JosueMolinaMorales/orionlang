@@ -20,4 +20,4 @@ jobs:
 workflows:
   main:
     jobs:
-      - build
+      - build-and-test
