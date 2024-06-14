@@ -21,6 +21,10 @@ func Start(in io.Reader, out io.Writer, useInterpreter bool) {
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
 
+	constants := []object.Object{}
+	globals := make([]object.Object, vm.GlobalsSize)
+	symbolTable := compiler.NewSymbolTable()
+
 	for {
 		fmt.Fprint(out, PROMPT)
 		scanned := scanner.Scan()
@@ -47,14 +51,17 @@ func Start(in io.Reader, out io.Writer, useInterpreter bool) {
 			return
 		}
 		// Compiler
-		comp := compiler.New()
+		comp := compiler.NewWithState(symbolTable, constants)
 		err := comp.Compile(program)
 		if err != nil {
 			fmt.Fprintf(out, "Compilation failed:\n %s\n", err)
 			continue
 		}
 
-		machine := vm.New(comp.Bytecode())
+		code := comp.Bytecode()
+		constants = code.Constants
+
+		machine := vm.NewWithGlobalsStore(code, globals)
 		err = machine.Run()
 		if err != nil {
 			fmt.Fprintf(out, "Executing bytecode failed:\n %s\n", err)

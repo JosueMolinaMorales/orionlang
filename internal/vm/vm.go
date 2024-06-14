@@ -8,7 +8,10 @@ import (
 	"github.com/JosueMolinaMorales/orionlang/internal/object"
 )
 
-const StackSize = 2046
+const (
+	StackSize   = 2046
+	GlobalsSize = 65536
+)
 
 var (
 	True  = &object.Boolean{Value: true}
@@ -21,8 +24,9 @@ type VM struct {
 	constants    []object.Object
 	instructions code.Instructions
 
-	stack []object.Object
-	sp    int // Always points to the next value. Top of stack is stack[sp-1]
+	stack   []object.Object
+	sp      int // Always points to the next value. Top of stack is stack[sp-1]
+	globals []object.Object
 }
 
 // New creates a new instance of the VM with the given bytecode.
@@ -33,7 +37,17 @@ func New(bytecode *compiler.Bytecode) *VM {
 		constants:    bytecode.Constants,
 		stack:        make([]object.Object, StackSize),
 		sp:           0,
+		globals:      make([]object.Object, GlobalsSize),
 	}
+}
+
+// NewWithGlobalsStore creates a new VM with the given bytecode and global store.
+// It initializes a new VM, sets the bytecode, and assigns the global store to the VM's globals field.
+// Returns the newly created VM.
+func NewWithGlobalsStore(bytecode *compiler.Bytecode, s []object.Object) *VM {
+	vm := New(bytecode)
+	vm.globals = s
+	return vm
 }
 
 // StackTop returns the top element of the stack.
@@ -108,6 +122,19 @@ func (vm *VM) Run() error {
 			}
 		case code.OpNull:
 			err := vm.push(Null)
+			if err != nil {
+				return err
+			}
+		case code.OpSetGlobal:
+			globalIndex := code.ReadUInt16(vm.instructions[ip+1:])
+			ip += 2
+
+			vm.globals[globalIndex] = vm.pop()
+		case code.OpGetGlobal:
+			globalIndex := code.ReadUInt16(vm.instructions[ip+1:])
+			ip += 2
+
+			err := vm.push(vm.globals[globalIndex])
 			if err != nil {
 				return err
 			}

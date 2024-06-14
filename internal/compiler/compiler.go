@@ -20,6 +20,7 @@ type Compiler struct {
 	constants           []object.Object
 	lastInstruction     EmittedInstruction
 	previousInstruction EmittedInstruction
+	symbolTable         *SymbolTable
 }
 
 // New creates a pointer to a Compiler object
@@ -29,7 +30,16 @@ func New() *Compiler {
 		constants:           []object.Object{},
 		lastInstruction:     EmittedInstruction{},
 		previousInstruction: EmittedInstruction{},
+		symbolTable:         NewSymbolTable(),
 	}
+}
+
+func NewWithState(s *SymbolTable, constants []object.Object) *Compiler {
+	compiler := New()
+	compiler.symbolTable = s
+	compiler.constants = constants
+
+	return compiler
 }
 
 // Compile compiles the given AST node.
@@ -150,9 +160,22 @@ func (c *Compiler) Compile(node ast.Node) error {
 				return err
 			}
 		}
+	case *ast.LetStatement:
+		err := c.Compile(node.Value)
+		if err != nil {
+			return err
+		}
+		symbol := c.symbolTable.Define(node.Name.Value)
+		c.emit(code.OpSetGlobal, symbol.Index)
 	case *ast.IntegerLiteral:
 		integer := &object.Integer{Value: node.Value}
 		c.emit(code.OpConstant, c.addConstant(integer))
+	case *ast.Identifier:
+		symbol, ok := c.symbolTable.Resolve(node.Value)
+		if !ok {
+			return fmt.Errorf("undefined variable %s", node.Value)
+		}
+		c.emit(code.OpGetGlobal, symbol.Index)
 	case *ast.Boolean:
 		if node.Value {
 			c.emit(code.OpTrue)

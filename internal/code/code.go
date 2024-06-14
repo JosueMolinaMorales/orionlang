@@ -99,6 +99,10 @@ const (
 	OpJump
 	// OpNull represents a Null value and tells the vm to insert a null value
 	OpNull
+	// OpGetGlobal represents retrieving the value of a variable
+	OpGetGlobal
+	// OpSetGloabl represents setting the value of a global variable
+	OpSetGlobal
 )
 
 type Definition struct {
@@ -128,6 +132,8 @@ var definitions = map[Opcode]*Definition{
 	OpJumpNotTruthy: {"OpJumpNotTruthy", []int{2}},
 	OpJump:          {"OpJump", []int{2}},
 	OpNull:          {"OpNull", []int{}},
+	OpSetGlobal:     {"OpSetGlobal", []int{2}},
+	OpGetGlobal:     {"OpGetGlobal", []int{2}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
