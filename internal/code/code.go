@@ -103,6 +103,15 @@ const (
 	OpGetGlobal
 	// OpSetGloabl represents setting the value of a global variable
 	OpSetGlobal
+	// OpArray represents an array. It tells the VM how to build the array.
+	// It has 1 argument, an integer that represents how big the array is
+	OpArray
+	// OpHash represents a hash table in orionlang. It tells the VM how to build the hash table.
+	// It has 1 argument, an integer that represents the number of keys and values sitting on the stack
+	OpHash
+	// OpIndex represents indexing an array, hash, etc. There need to be two values sitting on the top
+	// of the stack: the object to be indexed and above that, the object serving as the index
+	OpIndex
 )
 
 type Definition struct {
@@ -134,6 +143,9 @@ var definitions = map[Opcode]*Definition{
 	OpNull:          {"OpNull", []int{}},
 	OpSetGlobal:     {"OpSetGlobal", []int{2}},
 	OpGetGlobal:     {"OpGetGlobal", []int{2}},
+	OpArray:         {"OpArray", []int{2}},
+	OpHash:          {"OpHash", []int{2}},
+	OpIndex:         {"OpIndex", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.

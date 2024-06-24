@@ -138,16 +138,140 @@ func (vm *VM) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpArray:
+			numElements := int(code.ReadUInt16(vm.instructions[ip+1:]))
+			ip += 2
+
+			array := vm.buildArray(vm.sp-numElements, vm.sp)
+			vm.sp = vm.sp - numElements
+
+			err := vm.push(array)
+			if err != nil {
+				return err
+			}
+		case code.OpHash:
+			numElements := int(code.ReadUInt16(vm.instructions[ip+1:]))
+			ip += 2
+
+			hash, err := vm.buildHash(vm.sp-numElements, vm.sp)
+			if err != nil {
+				return err
+			}
+			vm.sp = vm.sp - numElements
+			err = vm.push(hash)
+			if err != nil {
+				return err
+			}
+		case code.OpIndex:
+			index := vm.pop()
+			left := vm.pop()
+
+			err := vm.executeIndexExpression(left, index)
+			if err != nil {
+				return err
+			}
+
 		}
 	}
 
 	return nil
 }
 
+// LastPoppedStackElem returns the last element popped from the stack.
 func (vm *VM) LastPoppedStackElem() object.Object {
 	return vm.stack[vm.sp]
 }
 
+// buildHash builds a hash object from a range of stack elements.
+// It takes the start and end indices of the range and returns the resulting hash object and an error, if any.
+func (vm *VM) buildHash(startIndex, endIndex int) (object.Object, error) {
+	hashedPairs := make(map[object.HashKey]object.HashPair)
+
+	for i := startIndex; i < endIndex; i += 2 {
+		key := vm.stack[i]
+		value := vm.stack[i+1]
+
+		pair := object.HashPair{Key: key, Value: value}
+
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			return nil, fmt.Errorf("unusable has hash key: %s", key.Type())
+		}
+
+		hashedPairs[hashKey.HashKey()] = pair
+	}
+
+	return &object.Hash{Pairs: hashedPairs}, nil
+}
+
+// buildArray builds an array object from the elements on the VM stack.
+// It takes the start and end indices of the elements to include in the array.
+// It returns a pointer to the created array object.
+func (vm *VM) buildArray(startIndex, endIndex int) object.Object {
+	elements := make([]object.Object, endIndex-startIndex)
+
+	for i := startIndex; i < endIndex; i++ {
+		elements[i-startIndex] = vm.stack[i]
+	}
+
+	return &object.Array{Elements: elements}
+}
+
+// executeIndexExpression executes the index expression for the given left and index objects.
+// It supports indexing on arrays and hashes.
+// If the index operator is not supported for the given left object, it returns an error.
+func (vm *VM) executeIndexExpression(left, index object.Object) error {
+	switch {
+	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+		return vm.executeArrayIndex(left, index)
+	case left.Type() == object.HASH_OBJ:
+		return vm.executeHashIndex(left, index)
+	default:
+		return fmt.Errorf("index operator not supported: %s", left.Type())
+	}
+}
+
+// executeArrayIndex executes the array index operation on the virtual machine.
+// It takes an array object and an index object as arguments and returns an error.
+// If the index is out of range, it pushes null onto the stack. Otherwise, it pushes
+// the element at the specified index onto the stack.
+func (vm *VM) executeArrayIndex(array, index object.Object) error {
+	arrayObject := array.(*object.Array)
+	i := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+
+	if i < 0 || i > max {
+		return vm.push(Null)
+	}
+
+	return vm.push(arrayObject.Elements[i])
+}
+
+// executeHashIndex executes the hash index operation on the virtual machine.
+// It takes a hash object and an index object as parameters and returns an error.
+// If the index object is not usable as a hash key, it returns an error.
+// If the hash does not contain the specified key, it pushes null onto the stack.
+// Otherwise, it pushes the value associated with the key onto the stack.
+func (vm *VM) executeHashIndex(hash, index object.Object) error {
+	hashObject := hash.(*object.Hash)
+
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return fmt.Errorf("unusable as hash key: %s", index.Type())
+	}
+
+	pair, ok := hashObject.Pairs[key.HashKey()]
+	if !ok {
+		return vm.push(Null)
+	}
+
+	return vm.push(pair.Value)
+}
+
+// executeMinusOperator performs the execution of the minus operator in the virtual machine.
+// It pops an operand from the stack and checks if it is of type INTEGER_OBJ.
+// If the operand is not an integer, it returns an error.
+// Otherwise, it negates the value of the integer and pushes the result back onto the stack.
 func (vm *VM) executeMinusOperator() error {
 	operand := vm.pop()
 
@@ -159,6 +283,10 @@ func (vm *VM) executeMinusOperator() error {
 	return vm.push(&object.Integer{Value: -value})
 }
 
+// executeBangOperator performs the logical negation operation on the top value of the stack.
+// If the top value is True, it pushes False onto the stack.
+// If the top value is False or Null, it pushes True onto the stack.
+// For any other value, it pushes False onto the stack.
 func (vm *VM) executeBangOperator() error {
 	operand := vm.pop()
 
@@ -174,6 +302,13 @@ func (vm *VM) executeBangOperator() error {
 	}
 }
 
+// executeComparisonOperation executes a comparison operation on the top two values on the VM's stack.
+// It takes an opcode as a parameter and returns an error if the operation fails.
+// The method first pops the top two values from the stack and checks their types.
+// If both values are integers, it calls the executeIntegerComparison method to perform the comparison.
+// If the opcode is OpEqual, it pushes the result of the comparison (true or false) onto the stack.
+// If the opcode is OpNotEqual, it pushes the negation of the comparison result onto the stack.
+// If the opcode is not recognized, it returns an error with an unknown operator message.
 func (vm *VM) executeComparisonOperation(op code.Opcode) error {
 	right := vm.pop()
 	left := vm.pop()
@@ -192,6 +327,9 @@ func (vm *VM) executeComparisonOperation(op code.Opcode) error {
 	}
 }
 
+// executeIntegerComparison performs a comparison operation on two integer values.
+// It takes an opcode, left operand, and right operand as arguments.
+// The function returns an error if the operator is unknown.
 func (vm *VM) executeIntegerComparison(op code.Opcode, left, right object.Object) error {
 	leftValue := left.(*object.Integer).Value
 	rightValue := right.(*object.Integer).Value
@@ -208,6 +346,15 @@ func (vm *VM) executeIntegerComparison(op code.Opcode, left, right object.Object
 	}
 }
 
+// executeBinaryOperation executes a binary operation on the top two values on the VM's stack.
+// It takes an opcode as a parameter and returns an error if the operation is not supported for the given types.
+// The method first pops the top two values from the stack and determines their types.
+// It then performs the binary operation based on the types of the values.
+// If the types are not supported for the operation, it returns an error.
+// Supported types for binary operations are integer and string.
+// For integer types, it calls the executeBinaryIntegerOperation method.
+// For string types, it calls the executeBinaryStringOperation method.
+// If the types are not supported, it returns an error indicating the unsupported types.
 func (vm *VM) executeBinaryOperation(op code.Opcode) error {
 	right := vm.pop()
 	left := vm.pop()
@@ -215,13 +362,34 @@ func (vm *VM) executeBinaryOperation(op code.Opcode) error {
 	leftType := left.Type()
 	rightType := right.Type()
 
-	if leftType != object.INTEGER_OBJ || rightType != object.INTEGER_OBJ {
+	switch {
+	case leftType == object.INTEGER_OBJ && rightType == object.INTEGER_OBJ:
+		return vm.executeBinaryIntegerOperation(op, left, right)
+	case leftType == object.STRING_OBJ && rightType == object.STRING_OBJ:
+		return vm.executeBinaryStringOperation(op, left, right)
+	default:
 		return fmt.Errorf("unsupported types for binary operation: %s %s", leftType, rightType)
 	}
-
-	return vm.executeBinaryIntegerOperation(op, left, right)
 }
 
+// executeBinaryStringOperation performs a binary string operation on the given operands.
+// It concatenates the values of the left and right string objects and pushes the result onto the VM stack.
+// The only supported operator for string operations is the addition operator (+).
+// If the operator is not addition, it returns an error indicating an unknown string operator.
+func (vm *VM) executeBinaryStringOperation(op code.Opcode, left, right object.Object) error {
+	if op != code.OpAdd {
+		return fmt.Errorf("unknown string operator: %d", op)
+	}
+
+	leftValue := left.(*object.String).Value
+	rightValue := right.(*object.String).Value
+
+	return vm.push(&object.String{Value: leftValue + rightValue})
+}
+
+// executeBinaryIntegerOperation executes a binary integer operation on the virtual machine.
+// It takes an opcode, left operand, and right operand as arguments and returns an error if any.
+// The function performs the specified operation on the integer values and pushes the result onto the stack.
 func (vm *VM) executeBinaryIntegerOperation(op code.Opcode, left, right object.Object) error {
 	rightValue := right.(*object.Integer).Value
 	leftValue := left.(*object.Integer).Value
@@ -258,12 +426,15 @@ func (vm *VM) push(o object.Object) error {
 	return nil
 }
 
+// pop removes and returns the top element from the stack.
 func (vm *VM) pop() object.Object {
 	o := vm.stack[vm.sp-1]
 	vm.sp--
 	return o
 }
 
+// nativeBoolToBooleanObject converts a native bool value to a Boolean object.
+// If the input is true, it returns the True object. Otherwise, it returns the False object.
 func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	if input {
 		return True
@@ -271,6 +442,9 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	return False
 }
 
+// isTruthy checks if the given object is considered truthy.
+// It returns true if the object is a non-null boolean with a value of true,
+// and false otherwise.
 func isTruthy(obj object.Object) bool {
 	switch obj := obj.(type) {
 	case *object.Boolean:
