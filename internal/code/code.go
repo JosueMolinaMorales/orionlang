@@ -112,6 +112,13 @@ const (
 	// OpIndex represents indexing an array, hash, etc. There need to be two values sitting on the top
 	// of the stack: the object to be indexed and above that, the object serving as the index
 	OpIndex
+	// OpCall represents a call to a function. This tells the VM to execute the function on top
+	// of the stack
+	OpCall
+	// OpReturnValue represents returning from a function and tells the VM to return a value
+	OpReturnValue
+	// OpReturn represents returning from a function with no value. The VM returns null.
+	OpReturn
 )
 
 type Definition struct {
@@ -146,6 +153,9 @@ var definitions = map[Opcode]*Definition{
 	OpArray:         {"OpArray", []int{2}},
 	OpHash:          {"OpHash", []int{2}},
 	OpIndex:         {"OpIndex", []int{}},
+	OpCall:          {"OpCall", []int{}},
+	OpReturnValue:   {"OpReturnValue", []int{}},
+	OpReturn:        {"OpReturn", []int{}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
