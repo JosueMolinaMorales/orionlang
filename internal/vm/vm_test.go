@@ -39,7 +39,7 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 	}
 }
 
-func TestFirstCalssFunctions(t *testing.T) {
+func TestFirstClassFunctions(t *testing.T) {
 	tests := []vmTestCase{
 		{
 			input: `
