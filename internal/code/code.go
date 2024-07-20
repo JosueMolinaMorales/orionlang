@@ -119,6 +119,10 @@ const (
 	OpReturnValue
 	// OpReturn represents returning from a function with no value. The VM returns null.
 	OpReturn
+	// OpGetLocal represents retrieving the value of a local variable
+	OpGetLocal
+	// OpSetLocal represents setting the value of a local variable
+	OpSetLocal
 )
 
 type Definition struct {
@@ -153,9 +157,11 @@ var definitions = map[Opcode]*Definition{
 	OpArray:         {"OpArray", []int{2}},
 	OpHash:          {"OpHash", []int{2}},
 	OpIndex:         {"OpIndex", []int{}},
-	OpCall:          {"OpCall", []int{}},
+	OpCall:          {"OpCall", []int{1}},
 	OpReturnValue:   {"OpReturnValue", []int{}},
 	OpReturn:        {"OpReturn", []int{}},
+	OpSetLocal:      {"OpSetLocal", []int{1}},
+	OpGetLocal:      {"OpGetLocal", []int{1}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.
@@ -200,6 +206,8 @@ func Make(op Opcode, operands ...int) []byte {
 		switch width {
 		case 2:
 			binary.BigEndian.PutUint16(instruction[offset:], uint16(o))
+		case 1:
+			instruction[offset] = byte(o)
 		}
 		offset += width
 	}
@@ -217,6 +225,8 @@ func ReadOperands(def *Definition, ins Instructions) ([]int, int) {
 		switch width {
 		case 2:
 			operands[i] = int(ReadUInt16(ins[offset:]))
+		case 1:
+			operands[i] = int(ReadUInt8(ins[offset:]))
 		}
 		offset += width
 	}
@@ -228,4 +238,9 @@ func ReadOperands(def *Definition, ins Instructions) ([]int, int) {
 // It assumes that the byte slice is in big-endian byte order.
 func ReadUInt16(ins Instructions) uint16 {
 	return binary.BigEndian.Uint16(ins)
+}
+
+// ReadUInt8 reads in a uint8 value from the given byte slice.
+func ReadUInt8(ins Instructions) uint8 {
+	return uint8(ins[0])
 }
