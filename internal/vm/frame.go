@@ -16,10 +16,12 @@ type Frame struct {
 	basePointer int
 }
 
+// NewFrame creates a new frame with the given compiled function and base pointer.
 func NewFrame(fn *object.CompiledFunction, basePointer int) *Frame {
 	return &Frame{fn: fn, ip: -1, basePointer: basePointer}
 }
 
+// Instructions returns the instructions associated with the frame.
 func (f *Frame) Instructions() code.Instructions {
 	return f.fn.Instructions
 }

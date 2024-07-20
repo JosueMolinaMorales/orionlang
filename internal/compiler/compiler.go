@@ -9,6 +9,8 @@ import (
 	"github.com/JosueMolinaMorales/orionlang/internal/object"
 )
 
+// CompilationScope represents a scope during the compilation process.
+// It holds the instructions, last emitted instruction, and previous emitted instruction.
 type CompilationScope struct {
 	instructions        code.Instructions
 	lastInstruction     EmittedInstruction
@@ -300,6 +302,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 	return nil
 }
 
+// replaceLastPopWithReturn replaces the last "pop" instruction in the current scope with a "return" instruction.
 func (c *Compiler) replaceLastPopWithReturn() {
 	lastPos := c.scopes[c.scopeIndex].lastInstruction.Position
 	c.replaceInstruction(lastPos, code.Make(code.OpReturnValue))
@@ -307,6 +310,7 @@ func (c *Compiler) replaceLastPopWithReturn() {
 	c.scopes[c.scopeIndex].lastInstruction.Opcode = code.OpReturnValue
 }
 
+// currentInstructions returns the current set of instructions for the compiler.
 func (c *Compiler) currentInstructions() code.Instructions {
 	return c.scopes[c.scopeIndex].instructions
 }
@@ -388,6 +392,9 @@ func (c *Compiler) addInstruction(ins []byte) int {
 	return posNewInstruction
 }
 
+// enterScope enters a new compilation scope.
+// It creates a new CompilationScope, appends it to the list of scopes,
+// increments the scope index, and creates a new enclosed symbol table.
 func (c *Compiler) enterScope() {
 	scope := CompilationScope{
 		instructions:        code.Instructions{},
@@ -399,6 +406,8 @@ func (c *Compiler) enterScope() {
 	c.symbolTable = NewEnclosedSymbolTable(c.symbolTable)
 }
 
+// leaveScope pops the current scope from the compiler's scope stack and returns the instructions
+// associated with the scope. It also updates the symbol table and scope index accordingly.
 func (c *Compiler) leaveScope() code.Instructions {
 	instructions := c.currentInstructions()
 

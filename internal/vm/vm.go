@@ -245,6 +245,11 @@ func (vm *VM) LastPoppedStackElem() object.Object {
 	return vm.stack[vm.sp]
 }
 
+// callFunction calls a compiled function with the specified number of arguments.
+// It verifies that the value on top of the stack is a compiled function,
+// checks if the number of arguments matches the function's expected number of parameters,
+// creates a new frame for the function call, pushes the frame onto the stack,
+// updates the stack pointer, and returns an error if any of the checks fail.
 func (vm *VM) callFunction(numArgs int) error {
 	fn, ok := vm.stack[vm.sp-1-numArgs].(*object.CompiledFunction)
 	if !ok {
