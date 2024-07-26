@@ -123,6 +123,8 @@ const (
 	OpGetLocal
 	// OpSetLocal represents setting the value of a local variable
 	OpSetLocal
+	// OpGetBuiltin represents retrieving a builtin function to call
+	OpGetBuiltin
 )
 
 type Definition struct {
@@ -162,6 +164,7 @@ var definitions = map[Opcode]*Definition{
 	OpReturn:        {"OpReturn", []int{}},
 	OpSetLocal:      {"OpSetLocal", []int{1}},
 	OpGetLocal:      {"OpGetLocal", []int{1}},
+	OpGetBuiltin:    {"OpGetBuiltin", []int{1}},
 }
 
 // Lookup looksup an opcode and returns its definition if found. otherwise, returns an error.

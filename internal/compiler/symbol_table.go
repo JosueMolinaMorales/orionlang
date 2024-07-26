@@ -7,6 +7,8 @@ const (
 	GlobalScope SymbolScope = "GLOBAL"
 	// LocalScope identifies a variable in a local scope
 	LocalScope SymbolScope = "LOCAL"
+	// BuiltinScope identified a builtin function
+	BuiltinScope SymbolScope = "BUILTIN"
 )
 
 func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {
@@ -48,6 +50,12 @@ func (s *SymbolTable) Define(name string) Symbol {
 	}
 	s.store[name] = symbol
 	s.numDefinitions++
+	return symbol
+}
+
+func (s *SymbolTable) DefineBuiltin(index int, name string) Symbol {
+	symbol := Symbol{Name: name, Index: index, Scope: BuiltinScope}
+	s.store[name] = symbol
 	return symbol
 }
 
